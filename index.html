@@ -6,20 +6,33 @@
     <title>Calculateur de Moyenne</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
+            width: 100%;
             max-width: 600px;
-            margin: 10px auto;
+            margin: 0 auto;
             padding: 15px;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
-            box-sizing: border-box;
         }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+        }
+
         .arabic-title {
             font-family: 'Noto Naskh Arabic', Arial, sans-serif;
             text-align: center;
             color: #2c3e50;
-            font-size: 24px;
+            font-size: clamp(18px, 5vw, 24px);
             margin-bottom: 15px;
             padding: 10px;
             background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
@@ -27,112 +40,186 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             animation: fadeIn 1.5s ease-out;
         }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
         h1 {
-            font-size: 22px;
+            font-size: clamp(18px, 4vw, 22px);
             margin: 0 0 15px 0;
             color: #2c3e50;
             text-align: center;
         }
+
         .module-row {
             display: grid;
-            grid-template-columns: 140px 60px 70px 70px 30px;
+            grid-template-columns: minmax(100px, 140px) minmax(50px, 60px) minmax(60px, 70px) minmax(60px, 70px) 30px;
             gap: 8px;
             margin-bottom: 6px;
             align-items: center;
         }
+
+        @media (max-width: 480px) {
+            .module-row {
+                grid-template-columns: 1fr 45px 55px 55px 30px;
+                gap: 4px;
+                font-size: 12px;
+            }
+        }
+
         .header-row {
             color: #34495e;
             font-weight: bold;
-            font-size: 13px;
+            font-size: clamp(12px, 3vw, 13px);
             margin-bottom: 8px;
         }
+
         .module-name {
-            font-size: 13px;
+            font-size: clamp(12px, 3vw, 13px);
             color: #2c3e50;
         }
+
         input {
             width: 100%;
-            padding: 4px;
+            padding: clamp(3px, 1vw, 4px);
             border: 1px solid #bdc3c7;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: clamp(12px, 3vw, 13px);
             background: rgba(255, 255, 255, 0.9);
             transition: all 0.3s ease;
         }
+
+        @media (max-width: 480px) {
+            input {
+                padding: 4px 2px;
+            }
+            input[type="number"] {
+                padding-right: 0;
+            }
+        }
+
         input:focus {
             outline: none;
             border-color: #3498db;
             box-shadow: 0 0 3px rgba(52, 152, 219, 0.5);
         }
+
         button {
             margin: 12px 0;
-            padding: 8px 20px;
+            padding: clamp(6px, 2vw, 8px) clamp(12px, 3vw, 20px);
             background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: clamp(12px, 3vw, 14px);
             transition: transform 0.2s;
+            white-space: nowrap;
         }
+
         button:hover {
             transform: translateY(-1px);
             background: linear-gradient(135deg, #2980b9 0%, #2573a7 100%);
         }
+
         .btn-remove {
             background: none;
             color: #e74c3c;
             padding: 2px 8px;
             font-size: 18px;
             margin: 0;
+            min-width: 30px;
         }
+
         .btn-remove:hover {
             background: rgba(231, 76, 60, 0.1);
         }
+
         #result {
             margin-top: 12px;
-            font-size: 13px;
+            font-size: clamp(12px, 3vw, 13px);
             line-height: 1.4;
         }
+
         .module-result {
             color: #2c3e50;
             display: flex;
             justify-content: space-between;
             padding: 3px 0;
         }
+
         .final-average {
             margin-top: 8px;
             font-weight: bold;
             color: #2980b9;
-            font-size: 15px;
+            font-size: clamp(14px, 3.5vw, 15px);
             text-align: right;
             padding-top: 8px;
             border-top: 1px solid #eee;
         }
+
         .container {
             background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
+            padding: clamp(10px, 3vw, 15px);
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
         .buttons-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: 15px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
+
+        @media (max-width: 480px) {
+            .buttons-container {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .buttons-container button {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+
         #addModule {
             background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
         }
+
         #addModule:hover {
             background: linear-gradient(135deg, #219a52 0%, #1e8449 100%);
         }
+
         .module-name input {
-            font-size: 13px;
+            font-size: clamp(12px, 3vw, 13px);
+        }
+
+        /* Remove browser spinner buttons from number inputs */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .clear-data {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+            margin-left: auto;
+        }
+        .clear-data:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%) !important;
+        }
+        @media (max-width: 480px) {
+            .clear-data {
+                margin-left: 0;
+            }
         }
     </style>
 </head>
@@ -152,6 +239,7 @@
             <div class="buttons-container">
                 <button type="button" id="addModule">+ Ajouter Module</button>
                 <button type="submit">Calculer</button>
+                <button type="button" class="clear-data" id="clearData">Effacer tout</button>
             </div>
         </form>
         <div id="result"></div>
@@ -159,31 +247,85 @@
 
     <script>
         let moduleCount = 0;
+        const STORAGE_KEY = 'moduleData';
 
-        function addModule() {
+        function saveToLocalStorage() {
+            const modules = document.getElementsByClassName('module-row');
+            const data = [];
+            
+            for (let i = 1; i < modules.length; i++) { // Skip header
+                const module = modules[i];
+                data.push({
+                    name: module.querySelector('.module-name-input').value,
+                    coeff: module.querySelector('.coeff').value,
+                    td: module.querySelector('.td').value,
+                    examen: module.querySelector('.examen').value
+                });
+            }
+            
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                const modules = JSON.parse(data);
+                modules.forEach(module => {
+                    addModule(module);
+                });
+            } else {
+                // Add one empty module if no data exists
+                addModule();
+            }
+        }
+
+        function addModule(data = null) {
             moduleCount++;
             const moduleDiv = document.createElement('div');
             moduleDiv.className = 'module-row';
             moduleDiv.innerHTML = `
                 <div class="module-name">
-                    <input type="text" class="module-name-input" placeholder="Module ${moduleCount}" required>
+                    <input type="text" class="module-name-input" placeholder="Module ${moduleCount}" 
+                           value="${data ? data.name : ''}" required>
                 </div>
-                <input type="number" class="coeff" required min="1" max="10" value="1">
-                <input type="number" class="td" step="0.01" required min="0" max="20">
-                <input type="number" class="examen" step="0.01" required min="0" max="20">
+                <input type="number" class="coeff" required min="1" max="10" 
+                       value="${data ? data.coeff : '1'}">
+                <input type="number" class="td" step="0.01" required min="0" max="20"
+                       value="${data ? data.td : ''}">
+                <input type="number" class="examen" step="0.01" required min="0" max="20"
+                       value="${data ? data.examen : ''}">
                 <button type="button" class="btn-remove" onclick="removeModule(this)">×</button>
             `;
             document.getElementById('modulesList').appendChild(moduleDiv);
+
+            // Add event listeners to save on input change
+            const inputs = moduleDiv.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', saveToLocalStorage);
+            });
         }
 
         function removeModule(button) {
             button.parentElement.remove();
+            saveToLocalStorage();
         }
 
-        document.getElementById('addModule').addEventListener('click', addModule);
+        function clearAllData() {
+            if (confirm('Êtes-vous sûr de vouloir effacer toutes les données ?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                document.getElementById('modulesList').innerHTML = '';
+                document.getElementById('result').innerHTML = '';
+                moduleCount = 0;
+                addModule(); // Add one empty module
+            }
+        }
 
-        // Add first module automatically
-        addModule();
+        document.getElementById('addModule').addEventListener('click', () => {
+            addModule();
+            saveToLocalStorage();
+        });
+
+        document.getElementById('clearData').addEventListener('click', clearAllData);
 
         document.getElementById('moyenneForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -216,7 +358,13 @@
                 ${resultHTML}
                 <div class="final-average">Moyenne générale: ${finalAverage.toFixed(2)}/20</div>
             `;
+
+            // Save after calculation
+            saveToLocalStorage();
         });
+
+        // Load saved data when page loads
+        loadFromLocalStorage();
     </script>
 </body>
 </html>
