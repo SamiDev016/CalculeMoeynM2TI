@@ -12,7 +12,7 @@
             margin: 10px auto;
             padding: 15px;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            height: 100vh;
+            min-height: 100vh;
             box-sizing: border-box;
         }
         .arabic-title {
@@ -39,7 +39,7 @@
         }
         .module-row {
             display: grid;
-            grid-template-columns: 90px 70px 70px;
+            grid-template-columns: 90px 60px 70px 70px 30px;
             gap: 8px;
             margin-bottom: 6px;
             align-items: center;
@@ -53,10 +53,6 @@
         .module-name {
             font-size: 13px;
             color: #2c3e50;
-        }
-        .coeff {
-            color: #e74c3c;
-            font-size: 11px;
         }
         input {
             width: 100%;
@@ -82,12 +78,20 @@
             cursor: pointer;
             font-size: 14px;
             transition: transform 0.2s;
-            display: block;
-            margin-left: auto;
         }
         button:hover {
             transform: translateY(-1px);
             background: linear-gradient(135deg, #2980b9 0%, #2573a7 100%);
+        }
+        .btn-remove {
+            background: none;
+            color: #e74c3c;
+            padding: 2px 8px;
+            font-size: 18px;
+            margin: 0;
+        }
+        .btn-remove:hover {
+            background: rgba(231, 76, 60, 0.1);
         }
         #result {
             margin-top: 12px;
@@ -110,6 +114,18 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        #addModule {
+            background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+        }
+        #addModule:hover {
+            background: linear-gradient(135deg, #219a52 0%, #1e8449 100%);
+        }
     </style>
 </head>
 <body>
@@ -119,92 +135,66 @@
         <form id="moyenneForm">
             <div class="module-row header-row">
                 <div>Module</div>
+                <div>Coeff</div>
                 <div>TD</div>
                 <div>Examen</div>
+                <div></div>
             </div>
-
-            <div class="module-row">
-                <div class="module-name">BDD <span class="coeff">(c:2)</span></div>
-                <input type="number" id="bdd-td" step="0.01" required min="0" max="20">
-                <input type="number" id="bdd-examen" step="0.01" required min="0" max="20">
+            <div id="modulesList"></div>
+            <div class="buttons-container">
+                <button type="button" id="addModule">+ Ajouter Module</button>
+                <button type="submit">Calculer</button>
             </div>
-
-            <div class="module-row">
-                <div class="module-name">DM <span class="coeff">(c:2)</span></div>
-                <input type="number" id="dm-td" step="0.01" required min="0" max="20">
-                <input type="number" id="dm-examen" step="0.01" required min="0" max="20">
-            </div>
-
-            <div class="module-row">
-                <div class="module-name">Sec <span class="coeff">(c:3)</span></div>
-                <input type="number" id="sec-td" step="0.01" required min="0" max="20">
-                <input type="number" id="sec-examen" step="0.01" required min="0" max="20">
-            </div>
-
-            <div class="module-row">
-                <div class="module-name">JE22 <span class="coeff">(c:3)</span></div>
-                <input type="number" id="je22-td" step="0.01" required min="0" max="20">
-                <input type="number" id="je22-examen" step="0.01" required min="0" max="20">
-            </div>
-
-            <div class="module-row">
-                <div class="module-name">TDC <span class="coeff">(c:2)</span></div>
-                <input type="number" id="tdc-td" step="0.01" required min="0" max="20">
-                <input type="number" id="tdc-examen" step="0.01" required min="0" max="20">
-            </div>
-
-            <div class="module-row">
-                <div class="module-name">XML <span class="coeff">(c:2)</span></div>
-                <input type="number" id="xml-td" step="0.01" required min="0" max="20">
-                <input type="number" id="xml-examen" step="0.01" required min="0" max="20">
-            </div>
-
-            <div class="module-row">
-                <div class="module-name">Platform <span class="coeff">(c:2)</span></div>
-                <input type="number" id="platform-td" step="0.01" required min="0" max="20">
-                <input type="number" id="platform-examen" step="0.01" required min="0" max="20">
-            </div>
-
-            <div class="module-row">
-                <div class="module-name">English <span class="coeff">(c:1)</span></div>
-                <input type="number" id="english-td" step="0.01" required min="0" max="20">
-                <input type="number" id="english-examen" step="0.01" required min="0" max="20">
-            </div>
-
-            <button type="submit">Calculer</button>
         </form>
         <div id="result"></div>
     </div>
 
     <script>
+        let moduleCount = 0;
+
+        function addModule() {
+            moduleCount++;
+            const moduleDiv = document.createElement('div');
+            moduleDiv.className = 'module-row';
+            moduleDiv.innerHTML = `
+                <div class="module-name">Module ${moduleCount}</div>
+                <input type="number" class="coeff" required min="1" max="10" value="1">
+                <input type="number" class="td" step="0.01" required min="0" max="20">
+                <input type="number" class="examen" step="0.01" required min="0" max="20">
+                <button type="button" class="btn-remove" onclick="removeModule(this)">×</button>
+            `;
+            document.getElementById('modulesList').appendChild(moduleDiv);
+        }
+
+        function removeModule(button) {
+            button.parentElement.remove();
+        }
+
+        document.getElementById('addModule').addEventListener('click', addModule);
+
+        // Add first module automatically
+        addModule();
+
         document.getElementById('moyenneForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const modules = [
-                { name: 'BDD', coeff: 2 },
-                { name: 'DM', coeff: 2 },
-                { name: 'Sec', coeff: 3 },
-                { name: 'JE22', coeff: 3 },
-                { name: 'TDC', coeff: 2 },
-                { name: 'XML', coeff: 2 },
-                { name: 'Platform', coeff: 2 },
-                { name: 'English', coeff: 1 }
-            ];
-
+            const modules = document.getElementsByClassName('module-row');
             let totalPoints = 0;
             let totalCoeff = 0;
             let resultHTML = '';
 
-            modules.forEach(module => {
-                const tdValue = parseFloat(document.getElementById(`${module.name.toLowerCase()}-td`).value);
-                const examenValue = parseFloat(document.getElementById(`${module.name.toLowerCase()}-examen`).value);
+            for (let i = 1; i < modules.length; i++) { // Start from 1 to skip header
+                const module = modules[i];
+                const coeff = parseFloat(module.querySelector('.coeff').value);
+                const td = parseFloat(module.querySelector('.td').value);
+                const examen = parseFloat(module.querySelector('.examen').value);
                 
-                const moduleAverage = ((examenValue * 2) + tdValue) / 3;
-                totalPoints += moduleAverage * module.coeff;
-                totalCoeff += module.coeff;
+                const moduleAverage = ((examen * 2) + td) / 3;
+                totalPoints += moduleAverage * coeff;
+                totalCoeff += coeff;
 
-                resultHTML += `<div class="module-result">${module.name}: ${moduleAverage.toFixed(2)}/20</div>`;
-            });
+                resultHTML += `<div class="module-result">Module ${i}: ${moduleAverage.toFixed(2)}/20</div>`;
+            }
 
             const finalAverage = totalPoints / totalCoeff;
             
