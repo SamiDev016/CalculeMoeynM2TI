@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            max-width: 500px;
+            max-width: 600px;
             margin: 10px auto;
             padding: 15px;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -39,7 +39,7 @@
         }
         .module-row {
             display: grid;
-            grid-template-columns: 90px 60px 70px 70px 30px;
+            grid-template-columns: 140px 60px 70px 70px 30px;
             gap: 8px;
             margin-bottom: 6px;
             align-items: center;
@@ -100,6 +100,9 @@
         }
         .module-result {
             color: #2c3e50;
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
         }
         .final-average {
             margin-top: 8px;
@@ -107,6 +110,8 @@
             color: #2980b9;
             font-size: 15px;
             text-align: right;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
         }
         .container {
             background: rgba(255, 255, 255, 0.9);
@@ -125,6 +130,9 @@
         }
         #addModule:hover {
             background: linear-gradient(135deg, #219a52 0%, #1e8449 100%);
+        }
+        .module-name input {
+            font-size: 13px;
         }
     </style>
 </head>
@@ -157,7 +165,9 @@
             const moduleDiv = document.createElement('div');
             moduleDiv.className = 'module-row';
             moduleDiv.innerHTML = `
-                <div class="module-name">Module ${moduleCount}</div>
+                <div class="module-name">
+                    <input type="text" class="module-name-input" placeholder="Module ${moduleCount}" required>
+                </div>
                 <input type="number" class="coeff" required min="1" max="10" value="1">
                 <input type="number" class="td" step="0.01" required min="0" max="20">
                 <input type="number" class="examen" step="0.01" required min="0" max="20">
@@ -185,6 +195,7 @@
 
             for (let i = 1; i < modules.length; i++) { // Start from 1 to skip header
                 const module = modules[i];
+                const moduleName = module.querySelector('.module-name-input').value || `Module ${i}`;
                 const coeff = parseFloat(module.querySelector('.coeff').value);
                 const td = parseFloat(module.querySelector('.td').value);
                 const examen = parseFloat(module.querySelector('.examen').value);
@@ -193,7 +204,10 @@
                 totalPoints += moduleAverage * coeff;
                 totalCoeff += coeff;
 
-                resultHTML += `<div class="module-result">Module ${i}: ${moduleAverage.toFixed(2)}/20</div>`;
+                resultHTML += `<div class="module-result">
+                    <span>${moduleName}</span>
+                    <span>${moduleAverage.toFixed(2)}/20</span>
+                </div>`;
             }
 
             const finalAverage = totalPoints / totalCoeff;
