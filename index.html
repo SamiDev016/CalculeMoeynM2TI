@@ -3,42 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculateur de Moyenne</title>
+    <title>Moyenne Semestre | Calculateur</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
-            padding: 15px;
+            padding: 10px;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .arabic-title {
             font-family: 'Noto Naskh Arabic', Arial, sans-serif;
             text-align: center;
-            color: #2c3e50;
-            font-size: clamp(18px, 5vw, 24px);
-            margin-bottom: 15px;
-            padding: 10px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            color: #00a884;
+            font-size: clamp(16px, 4vw, 20px);
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             animation: fadeIn 1.5s ease-out;
+        }
+
+        h1 {
+            font-size: clamp(16px, 3vw, 18px);
+            margin: 0 0 10px 0;
+            color: #00a884;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .module-row {
+            display: grid;
+            grid-template-columns: minmax(100px, 140px) minmax(50px, 60px) minmax(60px, 70px) minmax(60px, 70px) 30px;
+            gap: 3px;
+            margin-bottom: 0px;
+            align-items: center;
+            padding: 6px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .header-row {
+            color: #00a884;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 6px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            padding: 8px 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00a884;
+            box-shadow: 0 0 0 2px rgba(0, 168, 132, 0.1);
+        }
+
+        button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        #addModule {
+            background: #00a884;
+            color: white;
+        }
+
+        #addModule:hover {
+            background: #008f6f;
+        }
+
+        button[type="submit"] {
+            background: #2563eb;
+            color: white;
+        }
+
+        button[type="submit"]:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-remove {
+            background: none;
+            color: #ef4444;
+            padding: 2px 8px;
+            font-size: 18px;
+            min-width: 30px;
+        }
+
+        .btn-remove:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .clear-data {
+            background: #ef4444 !important;
+            color: white;
+        }
+
+        .clear-data:hover {
+            background: #dc2626 !important;
+        }
+
+        .success {
+            color: white;
+            background: #00a884;
+            font-weight: 500;
+            padding: 10px;
+            border-radius: 6px;
+            animation: success-animation 1s ease-in-out;
+        }
+
+        #result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .module-result {
+            padding: 2px 0;
+        }
+
+        .final-average {
+            margin-top: 6px;
+            padding-top: 6px;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            gap: 8px;
+        }
+
+        @media (max-width: 480px) {
+            .buttons-container {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .buttons-container button {
+                width: 100%;
+            }
         }
 
         @keyframes fadeIn {
@@ -46,203 +188,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h1 {
-            font-size: clamp(18px, 4vw, 22px);
-            margin: 0 0 15px 0;
-            color: #2c3e50;
-            text-align: center;
-        }
-
-        .module-row {
-            display: grid;
-            grid-template-columns: minmax(100px, 140px) minmax(50px, 60px) minmax(60px, 70px) minmax(60px, 70px) 30px;
-            gap: 8px;
-            margin-bottom: 6px;
-            align-items: center;
-        }
-
-        @media (max-width: 480px) {
-            .module-row {
-                grid-template-columns: 1fr 45px 55px 55px 30px;
-                gap: 4px;
-                font-size: 12px;
-            }
-        }
-
-        .header-row {
-            color: #34495e;
-            font-weight: bold;
-            font-size: clamp(12px, 3vw, 13px);
-            margin-bottom: 8px;
-        }
-
-        .module-name {
-            font-size: clamp(12px, 3vw, 13px);
-            color: #2c3e50;
-        }
-
-        input {
-            width: 100%;
-            padding: clamp(3px, 1vw, 4px);
-            border: 1px solid #bdc3c7;
-            border-radius: 4px;
-            font-size: clamp(12px, 3vw, 13px);
-            background: rgba(255, 255, 255, 0.9);
-            transition: all 0.3s ease;
-        }
-
-        @media (max-width: 480px) {
-            input {
-                padding: 4px 2px;
-            }
-            input[type="number"] {
-                padding-right: 0;
-            }
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 3px rgba(52, 152, 219, 0.5);
-        }
-
-        button {
-            margin: 12px 0;
-            padding: clamp(6px, 2vw, 8px) clamp(12px, 3vw, 20px);
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: clamp(12px, 3vw, 14px);
-            transition: transform 0.2s;
-            white-space: nowrap;
-        }
-
-        button:hover {
-            transform: translateY(-1px);
-            background: linear-gradient(135deg, #2980b9 0%, #2573a7 100%);
-        }
-
-        .btn-remove {
-            background: none;
-            color: #e74c3c;
-            padding: 2px 8px;
-            font-size: 18px;
-            margin: 0;
-            min-width: 30px;
-        }
-
-        .btn-remove:hover {
-            background: rgba(231, 76, 60, 0.1);
-        }
-
-        #result {
-            margin-top: 12px;
-            font-size: clamp(12px, 3vw, 13px);
-            line-height: 1.4;
-        }
-
-        .module-result {
-            color: #2c3e50;
-            display: flex;
-            justify-content: space-between;
-            padding: 3px 0;
-        }
-
-        .final-average {
-            margin-top: 8px;
-            font-weight: bold;
-            color: #2980b9;
-            font-size: clamp(14px, 3.5vw, 15px);
-            text-align: right;
-            padding-top: 8px;
-            border-top: 1px solid #eee;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.9);
-            padding: clamp(10px, 3vw, 15px);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .buttons-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        @media (max-width: 480px) {
-            .buttons-container {
-                flex-direction: column;
-                gap: 5px;
-            }
-            .buttons-container button {
-                width: 100%;
-                margin: 5px 0;
-            }
-        }
-
-        #addModule {
-            background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
-        }
-
-        #addModule:hover {
-            background: linear-gradient(135deg, #219a52 0%, #1e8449 100%);
-        }
-
-        .module-name input {
-            font-size: clamp(12px, 3vw, 13px);
-        }
-
-        /* Remove browser spinner buttons from number inputs */
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-
-        .clear-data {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
-            margin-left: auto;
-        }
-        .clear-data:hover {
-            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%) !important;
-        }
-        @media (max-width: 480px) {
-            .clear-data {
-                margin-left: 0;
-            }
-        }
-
-        .success {
-            color: white;
-            background-color: green;
-            font-weight: bold;
-            padding: 10px;
-            border-radius: 5px;
-            text-shadow: 1px 1px 2px darkgreen;
-            transition: transform 0.2s;
-            animation: success-animation 1s ease-in-out;
-        }
-        .success:hover {
-            transform: scale(1.05);
-        }
-        .celebrate {
-            animation: celebrate-animation 1s ease-in-out;
-        }
-        @keyframes celebrate-animation {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
         @keyframes success-animation {
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
