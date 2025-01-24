@@ -221,10 +221,37 @@
                 margin-left: 0;
             }
         }
+
+        .success {
+            color: white;
+            background-color: green;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+            text-shadow: 1px 1px 2px darkgreen;
+            transition: transform 0.2s;
+            animation: success-animation 1s ease-in-out;
+        }
+        .success:hover {
+            transform: scale(1.05);
+        }
+        .celebrate {
+            animation: celebrate-animation 1s ease-in-out;
+        }
+        @keyframes celebrate-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        @keyframes success-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
-    <div class="arabic-title">بالتوفيق في الإختبارات</div>
+    <div class="arabic-title">🌳🌿 خضرة بإذن الله</div>
     <div class="container">
         <h1>Calculateur de Moyenne</h1>
         <form id="moyenneForm">
@@ -354,14 +381,35 @@
 
             const finalAverage = totalPoints / totalCoeff;
             
-            document.getElementById('result').innerHTML = `
-                ${resultHTML}
-                <div class="final-average">Moyenne générale: ${finalAverage.toFixed(2)}/20</div>
-            `;
+            const resultElement = document.getElementById('result');
+            resultElement.innerHTML = `${resultHTML}<div id="finalResult" class="result">Moyenne générale: <span id="averageValue">${finalAverage.toFixed(2)}</span>/20</div>`;
+
+            displayFinalResult(finalAverage);
 
             // Save after calculation
             saveToLocalStorage();
+
+            calculateResult(finalAverage);
         });
+
+        function displayFinalResult(finalAverage) {
+            const resultElement = document.getElementById('finalResult');
+            const averageValueElement = document.getElementById('averageValue');
+            averageValueElement.textContent = finalAverage.toFixed(2);
+
+            if (finalAverage > 10) {
+                resultElement.classList.add('success');
+            } else {
+                resultElement.classList.remove('success');
+            }
+        }
+
+        function calculateResult(result) {
+            if (result > 10) {
+                document.querySelector('.arabic-title').classList.add('success');
+                document.querySelector('.arabic-title').classList.add('celebrate');
+            }
+        }
 
         // Load saved data when page loads
         loadFromLocalStorage();
