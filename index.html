@@ -296,6 +296,13 @@
     <div class="arabic-title">🌳🌿 خضرة بإذن الله</div>
     <div class="container">
         <h1>Calculateur de Moyenne</h1>
+        <div style="margin-bottom: 15px; text-align: center;">
+            <label for="levelSelect" style="color: #00a884; margin-right: 10px;">Niveau:</label>
+            <select id="levelSelect" style="padding: 6px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 13px;">
+                <option value="master">Master</option>
+                <option value="licence">Licence</option>
+            </select>
+        </div>
         
         <form id="moyenneForm">
             <div class="module-row header-row">
@@ -389,7 +396,15 @@
         }
 
         function calculateModuleAverage(td, exam) {
-            return ((parseFloat(td) + parseFloat(exam) * 2) / 3).toFixed(2);
+            const level = document.getElementById('levelSelect').value;
+            td = parseFloat(td);
+            exam = parseFloat(exam);
+            
+            if (level === 'master') {
+                return ((td + exam * 2) / 3).toFixed(2);
+            } else {
+                return (exam * 0.6 + td * 0.4).toFixed(2);
+            }
         }
 
         function displayFinalResult(finalAverage) {
