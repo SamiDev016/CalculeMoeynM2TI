@@ -193,12 +193,110 @@
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
+
+        /* Add celebration and failure effects */
+        @keyframes celebrate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .celebration {
+            animation: celebrate 0.5s ease infinite;
+            color: #00a884 !important;
+            text-shadow: 0 0 10px rgba(0, 168, 132, 0.3);
+        }
+
+        .failure {
+            animation: shake 0.5s ease;
+            color: #ff4444 !important;
+            text-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+        }
+
+        /* Add confetti effect */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #00a884;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .final-result-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8f9fa;
+        }
+
+        .final-result {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            transition: color 0.3s ease;
+        }
+
+        .final-result.success {
+            color: #00a884;
+        }
+
+        .final-result.failure {
+            color: #ff4444;
+        }
+
+        .module-averages {
+            display: none;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .module-averages.visible {
+            display: block;
+        }
+
+        .module-average-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .module-average-row:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-averages {
+            background: #00a884;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-averages:hover {
+            background: #008f6f;
+        }
     </style>
 </head>
 <body>
     <div class="arabic-title">🌳🌿 خضرة بإذن الله</div>
     <div class="container">
         <h1>Calculateur de Moyenne</h1>
+        
         <form id="moyenneForm">
             <div class="module-row header-row">
                 <div>Module</div>
@@ -208,13 +306,17 @@
                 <div></div>
             </div>
             <div id="modulesList"></div>
+
             <div class="buttons-container">
                 <button type="button" id="addModule">+ Ajouter Module</button>
                 <button type="submit">Calculer</button>
                 <button type="button" class="clear-data" id="clearData">Effacer tout</button>
             </div>
         </form>
-        <div id="result"></div>
+
+        <div id="result" class="final-result">--.--</div>
+        <button id="toggleAverages" class="toggle-averages">Afficher les moyennes par module</button>
+        <div id="moduleAverages" class="module-averages"></div>
     </div>
 
     <script>
@@ -228,10 +330,10 @@
             for (let i = 1; i < modules.length; i++) { // Skip header
                 const module = modules[i];
                 data.push({
-                    name: module.querySelector('.module-name-input').value,
-                    coeff: module.querySelector('.coeff').value,
-                    td: module.querySelector('.td').value,
-                    examen: module.querySelector('.examen').value
+                    name: module.querySelector('input[name="module"]').value,
+                    coeff: module.querySelector('input[name="coeff"]').value,
+                    td: module.querySelector('input[name="td"]').value,
+                    examen: module.querySelector('input[name="examen"]').value
                 });
             }
             
@@ -256,16 +358,10 @@
             const moduleDiv = document.createElement('div');
             moduleDiv.className = 'module-row';
             moduleDiv.innerHTML = `
-                <div class="module-name">
-                    <input type="text" class="module-name-input" placeholder="Module ${moduleCount}" 
-                           value="${data ? data.name : ''}" required>
-                </div>
-                <input type="number" class="coeff" required min="1" max="10" 
-                       value="${data ? data.coeff : '1'}">
-                <input type="number" class="td" step="0.01" required min="0" max="20"
-                       value="${data ? data.td : ''}">
-                <input type="number" class="examen" step="0.01" required min="0" max="20"
-                       value="${data ? data.examen : ''}">
+                <input type="text" name="module" placeholder="Module ${moduleCount}" value="${data ? data.name : ''}" required>
+                <input type="number" name="coeff" required min="1" max="10" value="${data ? data.coeff : '1'}">
+                <input type="number" name="td" step="0.01" required min="0" max="20" value="${data ? data.td : ''}">
+                <input type="number" name="examen" step="0.01" required min="0" max="20" value="${data ? data.examen : ''}">
                 <button type="button" class="btn-remove" onclick="removeModule(this)">×</button>
             `;
             document.getElementById('modulesList').appendChild(moduleDiv);
@@ -292,6 +388,75 @@
             }
         }
 
+        function calculateModuleAverage(td, exam) {
+            return (parseFloat(td) * 0.4 + parseFloat(exam) * 0.6).toFixed(2);
+        }
+
+        function displayFinalResult(finalAverage) {
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = finalAverage.toFixed(2);
+            
+            // Remove previous classes
+            resultElement.classList.remove('success', 'failure');
+            
+            // Clear previous confetti
+            document.querySelectorAll('.confetti').forEach(c => c.remove());
+            
+            // Calculate and display individual module averages
+            const moduleAverages = document.getElementById('moduleAverages');
+            moduleAverages.innerHTML = '';
+            
+            const modules = document.querySelectorAll('.module-row:not(.header-row)');
+            modules.forEach(module => {
+                const name = module.querySelector('input[name="module"]').value;
+                const td = module.querySelector('input[name="td"]').value;
+                const exam = module.querySelector('input[name="examen"]').value;
+                const average = calculateModuleAverage(td, exam);
+                
+                const averageRow = document.createElement('div');
+                averageRow.className = 'module-average-row';
+                averageRow.innerHTML = `
+                    <span>${name}</span>
+                    <span>${average}</span>
+                `;
+                moduleAverages.appendChild(averageRow);
+            });
+            
+            if (finalAverage >= 10.00) {
+                resultElement.classList.add('success');
+                createConfetti();
+            } else {
+                resultElement.classList.add('failure');
+            }
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                document.body.appendChild(confetti);
+                
+                // Random position and animation
+                const startX = Math.random() * window.innerWidth;
+                const startY = -10;
+                const endY = window.innerHeight + 10;
+                
+                confetti.style.left = startX + 'px';
+                confetti.style.top = startY + 'px';
+                confetti.style.backgroundColor = ['#00a884', '#4CAF50', '#8BC34A', '#CDDC39'][Math.floor(Math.random() * 4)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                // Animate confetti
+                confetti.animate([
+                    { top: startY + 'px', opacity: 1 },
+                    { top: endY + 'px', opacity: 0 }
+                ], {
+                    duration: 1000 + Math.random() * 2000,
+                    easing: 'cubic-bezier(.25,.46,.45,.94)'
+                }).onfinish = () => confetti.remove();
+            }
+        }
+
         document.getElementById('addModule').addEventListener('click', () => {
             addModule();
             saveToLocalStorage();
@@ -302,59 +467,38 @@
         document.getElementById('moyenneForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const modules = document.getElementsByClassName('module-row');
+            const modules = document.querySelectorAll('.module-row:not(.header-row)');
             let totalPoints = 0;
             let totalCoeff = 0;
-            let resultHTML = '';
-
-            for (let i = 1; i < modules.length; i++) { // Start from 1 to skip header
-                const module = modules[i];
-                const moduleName = module.querySelector('.module-name-input').value || `Module ${i}`;
-                const coeff = parseFloat(module.querySelector('.coeff').value);
-                const td = parseFloat(module.querySelector('.td').value);
-                const examen = parseFloat(module.querySelector('.examen').value);
+            
+            modules.forEach(module => {
+                const coeff = parseFloat(module.querySelector('input[name="coeff"]').value);
+                const td = parseFloat(module.querySelector('input[name="td"]').value);
+                const exam = parseFloat(module.querySelector('input[name="examen"]').value);
                 
-                const moduleAverage = ((examen * 2) + td) / 3;
+                const moduleAverage = calculateModuleAverage(td, exam);
                 totalPoints += moduleAverage * coeff;
                 totalCoeff += coeff;
-
-                resultHTML += `<div class="module-result">
-                    <span>${moduleName}</span>
-                    <span>${moduleAverage.toFixed(2)}/20</span>
-                </div>`;
-            }
+            });
 
             const finalAverage = totalPoints / totalCoeff;
             
-            const resultElement = document.getElementById('result');
-            resultElement.innerHTML = `${resultHTML}<div id="finalResult" class="result">Moyenne générale: <span id="averageValue">${finalAverage.toFixed(2)}</span>/20</div>`;
-
             displayFinalResult(finalAverage);
-
-            // Save after calculation
-            saveToLocalStorage();
-
-            calculateResult(finalAverage);
         });
 
-        function displayFinalResult(finalAverage) {
-            const resultElement = document.getElementById('finalResult');
-            const averageValueElement = document.getElementById('averageValue');
-            averageValueElement.textContent = finalAverage.toFixed(2);
-
-            if (finalAverage > 10) {
-                resultElement.classList.add('success');
+        // Add toggle functionality for module averages
+        document.getElementById('toggleAverages').addEventListener('click', function() {
+            const moduleAverages = document.getElementById('moduleAverages');
+            const button = document.getElementById('toggleAverages');
+            
+            if (moduleAverages.classList.contains('visible')) {
+                moduleAverages.classList.remove('visible');
+                button.textContent = 'Afficher les moyennes par module';
             } else {
-                resultElement.classList.remove('success');
+                moduleAverages.classList.add('visible');
+                button.textContent = 'Masquer les moyennes par module';
             }
-        }
-
-        function calculateResult(result) {
-            if (result > 10) {
-                document.querySelector('.arabic-title').classList.add('success');
-                document.querySelector('.arabic-title').classList.add('celebrate');
-            }
-        }
+        });
 
         // Load saved data when page loads
         loadFromLocalStorage();
