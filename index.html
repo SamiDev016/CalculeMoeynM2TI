@@ -389,7 +389,7 @@
         }
 
         function calculateModuleAverage(td, exam) {
-            return (parseFloat(td) * 0.4 + parseFloat(exam) * 0.6).toFixed(2);
+            return ((parseFloat(td) + parseFloat(exam) * 2) / 3).toFixed(2);
         }
 
         function displayFinalResult(finalAverage) {
